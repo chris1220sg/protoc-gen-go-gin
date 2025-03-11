@@ -12,7 +12,7 @@ type ecode struct {
 
 // Error for error
 func (code ecode) Error() string {
-	return fmt.Sprintf("WantCode: %d, msg: %s", code.code, code.msg)
+	return fmt.Sprintf("code: %d, msg: %s", code.code, code.msg)
 }
 
 // Code Code

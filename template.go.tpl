@@ -37,7 +37,7 @@ func (resp default{{$.Name}}Resp) response(ctx *gin.Context, status, code int, m
 func (resp default{{$.Name}}Resp) Error(ctx *gin.Context, err error) {
 	code := -1
 	status := 500
-	msg := "未知错误"
+	msg := "Unknown error"
 	
 	if err == nil {
 		msg += ", err is nil"
@@ -58,6 +58,18 @@ func (resp default{{$.Name}}Resp) Error(ctx *gin.Context, err error) {
 		msg = c.Message()
 	}
 
+	type iError interface{
+        GetCode() int32
+        GetMessage() string
+    }
+
+    var e iError
+    if errors.As(err, &e) {
+        status = 200
+        code = e.GetCode()
+        msg = e.GetMessage()
+    }
+
 	_ = ctx.Error(err)
 
 	resp.response(ctx, status, code, msg, nil)
@@ -66,12 +78,12 @@ func (resp default{{$.Name}}Resp) Error(ctx *gin.Context, err error) {
 // ParamsError 参数错误
 func (resp default{{$.Name}}Resp) ParamsError (ctx *gin.Context, err error) {
 	_ = ctx.Error(err)
-	resp.response(ctx, 400, 400, "参数错误", nil)
+	resp.response(ctx, 400, 400, "Parameter error", nil)
 }
 
 // Success 返回成功信息
 func (resp default{{$.Name}}Resp) Success(ctx *gin.Context, data interface{}) {
-	resp.response(ctx, 200, 0, "成功", data)
+	resp.response(ctx, 200, 0, "Success", data)
 }
 
 

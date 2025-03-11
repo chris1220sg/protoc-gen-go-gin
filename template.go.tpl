@@ -59,7 +59,7 @@ func (resp default{{$.Name}}Resp) Error(ctx *gin.Context, err error) {
 	}
 
 	type iError interface{
-        GetCode() int32
+        GetCode() int
         GetMessage() string
     }
 

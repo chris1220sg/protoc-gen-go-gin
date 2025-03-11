@@ -59,14 +59,14 @@ func (resp default{{$.Name}}Resp) Error(ctx *gin.Context, err error) {
 	}
 
 	type iError interface{
-        GetCode() int
+        GetCode() int32
         GetMessage() string
     }
 
     var e iError
     if errors.As(err, &e) {
         status = 200
-        code = e.GetCode()
+        code = int(e.GetCode())
         msg = e.GetMessage()
     }
 

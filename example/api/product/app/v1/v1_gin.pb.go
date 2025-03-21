@@ -3,10 +3,10 @@
 package v1
 
 import (
-	context "context"
+	//context "context"
 	errors "errors"
 	gin "github.com/gin-gonic/gin"
-	metadata "google.golang.org/grpc/metadata"
+	//metadata "google.golang.org/grpc/metadata"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -15,9 +15,9 @@ import (
 //gin.errors.
 
 type BlogServiceHTTPServer interface {
-	CreateArticle(context.Context, *Article) (*Article, error)
+	CreateArticle(*gin.Context, *Article) (*Article, error)
 
-	GetArticles(context.Context, *GetArticlesReq) (*GetArticlesResp, error)
+	GetArticles(*gin.Context, *GetArticlesReq) (*GetArticlesResp, error)
 }
 
 func RegisterBlogServiceHTTPServer(r gin.IRouter, srv BlogServiceHTTPServer) {
@@ -104,12 +104,12 @@ func (s *BlogService) GetArticles_0(ctx *gin.Context) {
 		return
 	}
 
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
-	}
-	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(BlogServiceHTTPServer).GetArticles(newCtx, &in)
+	//md := metadata.New(nil)
+	//for k, v := range ctx.Request.Header {
+	//	md.Set(k, v...)
+	//}
+	//newCtx := metadata.NewIncomingContext(ctx, md)
+	out, err := s.server.(BlogServiceHTTPServer).GetArticles(ctx, &in)
 	if err != nil {
 		s.resp.Error(ctx, err)
 		return
@@ -126,12 +126,12 @@ func (s *BlogService) GetArticles_1(ctx *gin.Context) {
 		return
 	}
 
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
-	}
-	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(BlogServiceHTTPServer).GetArticles(newCtx, &in)
+	//md := metadata.New(nil)
+	//for k, v := range ctx.Request.Header {
+	//	md.Set(k, v...)
+	//}
+	//newCtx := metadata.NewIncomingContext(ctx, md)
+	out, err := s.server.(BlogServiceHTTPServer).GetArticles(ctx, &in)
 	if err != nil {
 		s.resp.Error(ctx, err)
 		return
@@ -153,12 +153,12 @@ func (s *BlogService) CreateArticle_0(ctx *gin.Context) {
 		return
 	}
 
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
-	}
-	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(BlogServiceHTTPServer).CreateArticle(newCtx, &in)
+	//md := metadata.New(nil)
+	//for k, v := range ctx.Request.Header {
+	//	md.Set(k, v...)
+	//}
+	//newCtx := metadata.NewIncomingContext(ctx, md)
+	out, err := s.server.(BlogServiceHTTPServer).CreateArticle(ctx, &in)
 	if err != nil {
 		s.resp.Error(ctx, err)
 		return

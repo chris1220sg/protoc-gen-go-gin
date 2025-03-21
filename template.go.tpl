@@ -1,6 +1,6 @@
 type {{ $.InterfaceName }} interface {
 {{range .MethodSet}}
-	{{.Name}}(context.Context, *{{.Request}}) (*{{.Reply}}, error)
+	{{.Name}}(*gin.Context, *{{.Request}}) (*{{.Reply}}, error)
 {{end}}
 }
 func Register{{ $.InterfaceName }}(r gin.IRouter, srv {{ $.InterfaceName }}) {
@@ -112,12 +112,12 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		return
 	}
 {{end}}
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
-	}
-	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.({{ $.InterfaceName }}).{{.Name}}(newCtx, &in)
+	//md := metadata.New(nil)
+	//for k, v := range ctx.Request.Header {
+	//	md.Set(k, v...)
+	//}
+	//newCtx := metadata.NewIncomingContext(ctx, md)
+	out, err := s.server.({{ $.InterfaceName }}).{{.Name}}(ctx, &in)
 	if err != nil {
 		s.resp.Error(ctx, err)
 		return

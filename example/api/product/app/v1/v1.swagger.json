@@ -4,11 +4,6 @@
     "title": "product/app/v1/v1.proto",
     "version": "version not set"
   },
-  "tags": [
-    {
-      "name": "BlogService"
-    }
-  ],
   "consumes": [
     "application/json"
   ],
@@ -36,14 +31,14 @@
         "parameters": [
           {
             "name": "title",
-            "description": "@inject_tag: form:\"title\"",
+            "description": "@inject_tag: form:\"title\".",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "page",
-            "description": "@inject_tag: form:\"page\"",
+            "description": "@inject_tag: form:\"page\".",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -51,7 +46,7 @@
           },
           {
             "name": "page_size",
-            "description": "@inject_tag: form:\"page_size\"",
+            "description": "@inject_tag: form:\"page_size\".",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -59,7 +54,7 @@
           },
           {
             "name": "author_id",
-            "description": "@inject_tag: form:\"author_id\" uri:\"author_id\"",
+            "description": "@inject_tag: form:\"author_id\" uri:\"author_id\".",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -99,14 +94,14 @@
           },
           {
             "name": "title",
-            "description": "@inject_tag: form:\"title\"",
+            "description": "@inject_tag: form:\"title\".",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "page",
-            "description": "@inject_tag: form:\"page\"",
+            "description": "@inject_tag: form:\"page\".",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -114,7 +109,7 @@
           },
           {
             "name": "page_size",
-            "description": "@inject_tag: form:\"page_size\"",
+            "description": "@inject_tag: form:\"page_size\".",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -149,18 +144,6 @@
             "required": true,
             "type": "integer",
             "format": "int32"
-          },
-          {
-            "name": "title",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "content",
-            "in": "query",
-            "required": false,
-            "type": "string"
           }
         ],
         "tags": [
@@ -173,11 +156,14 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "@type": {
+        "type_url": {
           "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
         }
-      },
-      "additionalProperties": {}
+      }
     },
     "rpcStatus": {
       "type": "object",
@@ -192,7 +178,6 @@
         "details": {
           "type": "array",
           "items": {
-            "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
         }
@@ -224,7 +209,6 @@
         "articles": {
           "type": "array",
           "items": {
-            "type": "object",
             "$ref": "#/definitions/v1Article"
           }
         }

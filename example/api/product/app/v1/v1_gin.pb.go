@@ -3,29 +3,21 @@
 package v1
 
 import (
-	json "encoding/json"
+	//context "context"
 	errors "errors"
 	gin "github.com/gin-gonic/gin"
+	//metadata "google.golang.org/grpc/metadata"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the mohuishou/protoc-gen-go-gin package it is being compiled against.
-//json.gin.errors.
+// context.metadata.
+//gin.errors.
 
 type BlogServiceHTTPServer interface {
 	CreateArticle(*gin.Context, *Article) (*Article, error)
 
 	GetArticles(*gin.Context, *GetArticlesReq) (*GetArticlesResp, error)
-}
-
-// 支持 int64 用字符串输入的 JSON 绑定
-func BindJSONCompat(ctx *gin.Context, obj interface{}) error {
-	dec := json.NewDecoder(ctx.Request.Body)
-	dec.UseNumber()
-	if err := dec.Decode(obj); err != nil {
-		return err
-	}
-	return nil
 }
 
 func RegisterBlogServiceHTTPServer(r gin.IRouter, srv BlogServiceHTTPServer) {
@@ -62,7 +54,7 @@ func (resp defaultBlogServiceResp) response(ctx *gin.Context, status, code int, 
 func (resp defaultBlogServiceResp) Error(ctx *gin.Context, err error) {
 	code := -1
 	status := 500
-	msg := "Unknown error"
+	msg := "未知错误"
 
 	if err == nil {
 		msg += ", err is nil"
@@ -83,18 +75,6 @@ func (resp defaultBlogServiceResp) Error(ctx *gin.Context, err error) {
 		msg = c.Message()
 	}
 
-	type iError interface {
-		GetCode() int32
-		GetMessage() string
-	}
-
-	var e iError
-	if errors.As(err, &e) {
-		status = 200
-		code = int(e.GetCode())
-		msg = e.GetMessage()
-	}
-
 	_ = ctx.Error(err)
 
 	resp.response(ctx, status, code, msg, nil)
@@ -103,12 +83,12 @@ func (resp defaultBlogServiceResp) Error(ctx *gin.Context, err error) {
 // ParamsError 参数错误
 func (resp defaultBlogServiceResp) ParamsError(ctx *gin.Context, err error) {
 	_ = ctx.Error(err)
-	resp.response(ctx, 400, 400, "Parameter error", nil)
+	resp.response(ctx, 400, 400, "参数错误", nil)
 }
 
 // Success 返回成功信息
 func (resp defaultBlogServiceResp) Success(ctx *gin.Context, data interface{}) {
-	resp.response(ctx, 200, 0, "Success", data)
+	resp.response(ctx, 200, 0, "成功", data)
 }
 
 func (s *BlogService) GetArticles_0(ctx *gin.Context) {
@@ -168,7 +148,7 @@ func (s *BlogService) CreateArticle_0(ctx *gin.Context) {
 		return
 	}
 
-	if err := BindJSONCompat(ctx, &in); err != nil {
+	if err := ctx.ShouldBindJSON(&in); err != nil {
 		s.resp.ParamsError(ctx, err)
 		return
 	}

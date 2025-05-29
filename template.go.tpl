@@ -3,6 +3,17 @@ type {{ $.InterfaceName }} interface {
 	{{.Name}}(*gin.Context, *{{.Request}}) (*{{.Reply}}, error)
 {{end}}
 }
+
+// 支持 int64 用字符串输入的 JSON 绑定
+func BindJSONCompat(ctx *gin.Context, obj interface{}) error {
+	dec := json.NewDecoder(ctx.Request.Body)
+	dec.UseNumber()
+	if err := dec.Decode(obj); err != nil {
+		return err
+	}
+	return nil
+}
+
 func Register{{ $.InterfaceName }}(r gin.IRouter, srv {{ $.InterfaceName }}) {
 	s := {{.Name}}{
 		server: srv,
@@ -102,7 +113,7 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		return
 	}
 {{else if eq .Method "POST" "PUT" }}
-	if err := ctx.ShouldBindJSON(&in); err != nil {
+	if err := BindJSONCompat(ctx, &in); err != nil {
 		s.resp.ParamsError(ctx, err)
 		return
 	}

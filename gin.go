@@ -13,8 +13,9 @@ import (
 
 const (
 	//contextPkg         = protogen.GoImportPath("context")
-	ginPkg = protogen.GoImportPath("github.com/gin-gonic/gin")
-	errPkg = protogen.GoImportPath("errors")
+	jsonPkg = protogen.GoImportPath("encoding/json")
+	ginPkg  = protogen.GoImportPath("github.com/gin-gonic/gin")
+	errPkg  = protogen.GoImportPath("errors")
 	//metadataPkg        = protogen.GoImportPath("google.golang.org/grpc/metadata")
 	deprecationComment = "// Deprecated: Do not use."
 )
@@ -35,7 +36,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P("// This is a compile-time assertion to ensure that this generated file")
 	g.P("// is compatible with the mohuishou/protoc-gen-go-gin package it is being compiled against.")
 	//g.P("// ", contextPkg.Ident(""), metadataPkg.Ident(""))
-	g.P("//", ginPkg.Ident(""), errPkg.Ident(""))
+	g.P("//", jsonPkg.Ident(""), ginPkg.Ident(""), errPkg.Ident(""))
 	g.P()
 
 	for _, service := range file.Services {

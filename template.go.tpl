@@ -1,3 +1,14 @@
+var _ = io.EOF // 防止 "imported and not used" 报错
+
+var marshaler = protojson.MarshalOptions{
+	UseProtoNames:   true,
+	EmitUnpopulated: true,
+}
+var unmarshaler = protojson.UnmarshalOptions{
+	AllowPartial:   false,
+	DiscardUnknown: true,
+}
+
 type {{ $.InterfaceName }} interface {
 {{range .MethodSet}}
 	{{.Name}}(*gin.Context, *{{.Request}}) (*{{.Reply}}, error)
@@ -102,7 +113,12 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		return
 	}
 {{else if eq .Method "POST" "PUT" }}
-	if err := ctx.ShouldBindJSON(&in); err != nil {
+	reqRaw, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		s.resp.ParamsError(ctx, err)
+		return
+	}
+	if err := unmarshaler.Unmarshal(reqRaw, &in); err != nil {
 		s.resp.ParamsError(ctx, err)
 		return
 	}

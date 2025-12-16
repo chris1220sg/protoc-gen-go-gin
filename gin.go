@@ -17,11 +17,29 @@ const (
 	errPkg = protogen.GoImportPath("errors")
 	//metadataPkg        = protogen.GoImportPath("google.golang.org/grpc/metadata")
 	protojsonPkg       = protogen.GoImportPath("google.golang.org/protobuf/encoding/protojson")
+	emptypbPkg         = protogen.GoImportPath("google.golang.org/protobuf/types/known/emptypb")
 	ioPkg              = protogen.GoImportPath("io")
 	deprecationComment = "// Deprecated: Do not use."
 )
 
 var methodSets = make(map[string]int)
+
+// needsEmptyPb checks if any method in the file uses google.protobuf.Empty
+func needsEmptyPb(file *protogen.File) bool {
+	for _, service := range file.Services {
+		for _, method := range service.Methods {
+			// Check input type
+			if method.Input.GoIdent.GoImportPath == "google.golang.org/protobuf/types/known/emptypb" {
+				return true
+			}
+			// Check output type
+			if method.Output.GoIdent.GoImportPath == "google.golang.org/protobuf/types/known/emptypb" {
+				return true
+			}
+		}
+	}
+	return false
+}
 
 // generateFile generates a _gin.pb.go file.
 func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.GeneratedFile {
@@ -38,7 +56,12 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P("// is compatible with the mohuishou/protoc-gen-go-gin package it is being compiled against.")
 	//g.P("// ", contextPkg.Ident(""), metadataPkg.Ident(""))
 	g.P("//", ginPkg.Ident(""), errPkg.Ident(""))
-	g.P("// ", protojsonPkg.Ident(""), ioPkg.Ident(""))
+	// 动态判断是否需要 emptypb
+	if needsEmptyPb(file) {
+		g.P("// ", protojsonPkg.Ident(""), emptypbPkg.Ident(""), ioPkg.Ident(""))
+	} else {
+		g.P("// ", protojsonPkg.Ident(""), ioPkg.Ident(""))
+	}
 	g.P()
 
 	for _, service := range file.Services {
@@ -157,13 +180,23 @@ func buildMethodDesc(m *protogen.Method, httpMethod, path string) *method {
 	md := &method{
 		Name:    m.GoName,
 		Num:     methodSets[m.GoName],
-		Request: m.Input.GoIdent.GoName,
-		Reply:   m.Output.GoIdent.GoName,
+		Request: getTypeName(m.Input),
+		Reply:   getTypeName(m.Output),
 		Path:    path,
 		Method:  httpMethod,
 	}
 	md.initPathParams()
 	return md
+}
+
+// getTypeName returns the type name with package prefix if needed
+func getTypeName(msg *protogen.Message) string {
+	// Check if this is google.protobuf.Empty
+	if msg.GoIdent.GoImportPath == "google.golang.org/protobuf/types/known/emptypb" {
+		return "emptypb.Empty"
+	}
+	// For types in the same package, use simple name
+	return msg.GoIdent.GoName
 }
 
 var matchFirstCap = regexp.MustCompile("([A-Z])([A-Z][a-z])")

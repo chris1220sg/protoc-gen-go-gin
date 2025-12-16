@@ -38,7 +38,7 @@ type default{{$.Name}}Resp struct {}
 
 func (resp default{{$.Name}}Resp) response(ctx *gin.Context, status, code int, msg string, data interface{}) {
 	ctx.JSON(status, map[string]interface{}{
-		"code": code, 
+		"code": code,
 		"msg": msg,
 		"data": data,
 	})
@@ -139,7 +139,17 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		return
 	}
 
-	s.resp.Success(ctx, out)
+	// 如果有返回值，输出 JSON
+	if out != nil {
+		s.resp.Success(ctx, out)
+		return
+	}
+
+	// 如果返回 nil，检查是否已经写入响应（如文件下载、代理转发等）
+	if !ctx.Writer.Written() {
+		// 严格模式：开发者忘记处理响应，返回错误
+		s.resp.Error(ctx, errors.New("handler returned nil but no response was written"))
+	}
 }
 {{end}}
 

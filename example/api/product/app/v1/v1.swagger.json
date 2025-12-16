@@ -71,6 +71,74 @@
         ]
       }
     },
+    "/v1/articles/{article_id}/download": {
+      "get": {
+        "summary": "自定义响应示例：文件下载",
+        "operationId": "BlogService_DownloadArticle",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "article_id",
+            "description": "@inject_tag: uri:\"article_id\"",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BlogService"
+        ]
+      }
+    },
+    "/v1/articles/{article_id}/xml": {
+      "get": {
+        "summary": "自定义响应示例：XML 输出",
+        "operationId": "BlogService_GetArticleXML",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "article_id",
+            "description": "@inject_tag: uri:\"article_id\"",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BlogService"
+        ]
+      }
+    },
     "/v1/author/{author_id}/articles": {
       "get": {
         "operationId": "BlogService_GetArticles2",

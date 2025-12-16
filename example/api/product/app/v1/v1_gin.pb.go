@@ -6,13 +6,14 @@ import (
 	errors "errors"
 	gin "github.com/gin-gonic/gin"
 	protojson "google.golang.org/protobuf/encoding/protojson"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	io "io"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the mohuishou/protoc-gen-go-gin package it is being compiled against.
 //gin.errors.
-// protojson.io.
+// protojson.emptypb.io.
 
 var _ = io.EOF // 防止 "imported and not used" 报错
 
@@ -27,6 +28,10 @@ var unmarshaler = protojson.UnmarshalOptions{
 
 type BlogServiceHTTPServer interface {
 	CreateArticle(*gin.Context, *Article) (*Article, error)
+
+	DownloadArticle(*gin.Context, *DownloadArticleReq) (*emptypb.Empty, error)
+
+	GetArticleXML(*gin.Context, *GetArticleXMLReq) (*emptypb.Empty, error)
 
 	GetArticles(*gin.Context, *GetArticlesReq) (*GetArticlesResp, error)
 }
@@ -138,7 +143,17 @@ func (s *BlogService) GetArticles_0(ctx *gin.Context) {
 		return
 	}
 
-	s.resp.Success(ctx, out)
+	// 如果有返回值，输出 JSON
+	if out != nil {
+		s.resp.Success(ctx, out)
+		return
+	}
+
+	// 如果返回 nil，检查是否已经写入响应（如文件下载、代理转发等）
+	if !ctx.Writer.Written() {
+		// 严格模式：开发者忘记处理响应，返回错误
+		s.resp.Error(ctx, errors.New("handler returned nil but no response was written"))
+	}
 }
 
 func (s *BlogService) GetArticles_1(ctx *gin.Context) {
@@ -160,7 +175,17 @@ func (s *BlogService) GetArticles_1(ctx *gin.Context) {
 		return
 	}
 
-	s.resp.Success(ctx, out)
+	// 如果有返回值，输出 JSON
+	if out != nil {
+		s.resp.Success(ctx, out)
+		return
+	}
+
+	// 如果返回 nil，检查是否已经写入响应（如文件下载、代理转发等）
+	if !ctx.Writer.Written() {
+		// 严格模式：开发者忘记处理响应，返回错误
+		s.resp.Error(ctx, errors.New("handler returned nil but no response was written"))
+	}
 }
 
 func (s *BlogService) CreateArticle_0(ctx *gin.Context) {
@@ -192,7 +217,91 @@ func (s *BlogService) CreateArticle_0(ctx *gin.Context) {
 		return
 	}
 
-	s.resp.Success(ctx, out)
+	// 如果有返回值，输出 JSON
+	if out != nil {
+		s.resp.Success(ctx, out)
+		return
+	}
+
+	// 如果返回 nil，检查是否已经写入响应（如文件下载、代理转发等）
+	if !ctx.Writer.Written() {
+		// 严格模式：开发者忘记处理响应，返回错误
+		s.resp.Error(ctx, errors.New("handler returned nil but no response was written"))
+	}
+}
+
+func (s *BlogService) DownloadArticle_0(ctx *gin.Context) {
+	var in DownloadArticleReq
+
+	if err := ctx.ShouldBindUri(&in); err != nil {
+		s.resp.ParamsError(ctx, err)
+		return
+	}
+
+	if err := ctx.ShouldBindQuery(&in); err != nil {
+		s.resp.ParamsError(ctx, err)
+		return
+	}
+
+	//md := metadata.New(nil)
+	//for k, v := range ctx.Request.Header {
+	//	md.Set(k, v...)
+	//}
+	//newCtx := metadata.NewIncomingContext(ctx, md)
+	out, err := s.server.(BlogServiceHTTPServer).DownloadArticle(ctx, &in)
+	if err != nil {
+		s.resp.Error(ctx, err)
+		return
+	}
+
+	// 如果有返回值，输出 JSON
+	if out != nil {
+		s.resp.Success(ctx, out)
+		return
+	}
+
+	// 如果返回 nil，检查是否已经写入响应（如文件下载、代理转发等）
+	if !ctx.Writer.Written() {
+		// 严格模式：开发者忘记处理响应，返回错误
+		s.resp.Error(ctx, errors.New("handler returned nil but no response was written"))
+	}
+}
+
+func (s *BlogService) GetArticleXML_0(ctx *gin.Context) {
+	var in GetArticleXMLReq
+
+	if err := ctx.ShouldBindUri(&in); err != nil {
+		s.resp.ParamsError(ctx, err)
+		return
+	}
+
+	if err := ctx.ShouldBindQuery(&in); err != nil {
+		s.resp.ParamsError(ctx, err)
+		return
+	}
+
+	//md := metadata.New(nil)
+	//for k, v := range ctx.Request.Header {
+	//	md.Set(k, v...)
+	//}
+	//newCtx := metadata.NewIncomingContext(ctx, md)
+	out, err := s.server.(BlogServiceHTTPServer).GetArticleXML(ctx, &in)
+	if err != nil {
+		s.resp.Error(ctx, err)
+		return
+	}
+
+	// 如果有返回值，输出 JSON
+	if out != nil {
+		s.resp.Success(ctx, out)
+		return
+	}
+
+	// 如果返回 nil，检查是否已经写入响应（如文件下载、代理转发等）
+	if !ctx.Writer.Written() {
+		// 严格模式：开发者忘记处理响应，返回错误
+		s.resp.Error(ctx, errors.New("handler returned nil but no response was written"))
+	}
 }
 
 func (s *BlogService) RegisterService() {
@@ -202,5 +311,9 @@ func (s *BlogService) RegisterService() {
 	s.router.Handle("GET", "/v1/articles", s.GetArticles_1)
 
 	s.router.Handle("POST", "/v1/author/:author_id/articles", s.CreateArticle_0)
+
+	s.router.Handle("GET", "/v1/articles/:article_id/download", s.DownloadArticle_0)
+
+	s.router.Handle("GET", "/v1/articles/:article_id/xml", s.GetArticleXML_0)
 
 }

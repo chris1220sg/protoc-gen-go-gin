@@ -5,6 +5,7 @@ option go_package = "github.com/mohuishou/protoc-gen-go-gin/example/api/product/
 package product.app.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 // blog service is a blog demo
 service BlogService {
@@ -20,6 +21,20 @@ service BlogService {
 	rpc CreateArticle(Article) returns (Article) {
 		option (google.api.http) = {
 			post: "/v1/author/{author_id}/articles"
+		};
+	}
+
+	// 自定义响应示例：文件下载
+	rpc DownloadArticle(DownloadArticleReq) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			get: "/v1/articles/{article_id}/download"
+		};
+	}
+
+	// 自定义响应示例：XML 输出
+	rpc GetArticleXML(GetArticleXMLReq) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			get: "/v1/articles/{article_id}/xml"
 		};
 	}
 }
@@ -48,4 +63,14 @@ message Article {
 	string content = 2;
 	// @inject_tag: form:"author_id" uri:"author_id"
 	int32 author_id = 3;
+}
+
+message DownloadArticleReq {
+	// @inject_tag: uri:"article_id"
+	int32 article_id = 1;
+}
+
+message GetArticleXMLReq {
+	// @inject_tag: uri:"article_id"
+	int32 article_id = 1;
 }

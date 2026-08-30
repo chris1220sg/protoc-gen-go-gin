@@ -75,15 +75,24 @@ func (resp default{{$.Name}}Resp) Error(ctx *gin.Context, err error) {
     }
 
     var e iError
+    var data interface{}
     if errors.As(err, &e) {
         status = 200
         code = int(e.GetCode())
         msg = e.GetMessage()
+
+		type iErrorData interface{
+			GetData() interface{}
+		}
+
+		if d, ok := e.(iErrorData); ok {
+			data = d.GetData()
+		}
     }
 
 	_ = ctx.Error(err)
 
-	resp.response(ctx, status, code, msg, nil)
+	resp.response(ctx, status, code, msg, data)
 }
 
 // ParamsError 参数错误
